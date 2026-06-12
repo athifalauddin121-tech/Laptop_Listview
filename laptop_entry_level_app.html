@@ -1,0 +1,123 @@
+
+<h2 class="sr-only">Aplikasi LaptopList — halaman login dan daftar laptop entry level</h2>
+
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--font-sans); }
+  #screen-login, #screen-list { display: none; }
+  #screen-login.active, #screen-list.active { display: block; }
+  .screen { min-height: 560px; background: var(--color-background-tertiary); padding: 2rem 1rem; }
+
+  .login-wrap { max-width: 360px; margin: 0 auto; padding-top: 1.5rem; }
+  .login-brand { text-align: center; margin-bottom: 2rem; }
+  .login-brand .brand-icon { width: 56px; height: 56px; background: #1565C0; border-radius: var(--border-radius-lg); display: inline-flex; align-items: center; justify-content: center; margin-bottom: .75rem; }
+  .login-brand .brand-icon i { font-size: 28px; color: #fff; }
+  .login-brand h1 { font-size: 22px; font-weight: 500; color: var(--color-text-primary); }
+  .login-brand p { font-size: 13px; color: var(--color-text-secondary); margin-top: 2px; }
+
+  .login-card { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 1.5rem; }
+  .field { margin-bottom: 1rem; }
+  .field label { display: block; font-size: 12px; color: var(--color-text-secondary); margin-bottom: 5px; }
+  .field input { width: 100%; padding: 9px 12px; border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); font-size: 14px; background: var(--color-background-secondary); color: var(--color-text-primary); outline: none; }
+  .field input:focus { border-color: #1565C0; box-shadow: 0 0 0 3px rgba(21,101,192,0.12); }
+  .btn-login { width: 100%; padding: 11px; background: #1565C0; color: #fff; border: none; border-radius: var(--border-radius-md); font-size: 14px; font-weight: 500; cursor: pointer; margin-top: .5rem; letter-spacing: .3px; }
+  .btn-login:hover { background: #0d47a1; }
+  .login-hint { text-align: center; font-size: 11px; color: var(--color-text-tertiary); margin-top: 1rem; }
+  .error-msg { font-size: 12px; color: var(--color-text-danger); margin-top: .5rem; display: none; }
+
+  .list-header { background: #1565C0; padding: 14px 16px; display: flex; align-items: center; gap: 10px; }
+  .list-header i { color: #fff; font-size: 20px; }
+  .list-header h2 { color: #fff; font-size: 16px; font-weight: 500; }
+
+  .list-body { padding: 10px; }
+  .laptop-card { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 12px; display: flex; gap: 12px; margin-bottom: 8px; align-items: center; }
+  .laptop-img { width: 96px; height: 72px; border-radius: var(--border-radius-md); background: var(--color-background-secondary); flex-shrink: 0; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+  .laptop-img img { width: 100%; height: 100%; object-fit: contain; padding: 4px; }
+  .laptop-img .img-fallback { font-size: 28px; color: var(--color-text-tertiary); }
+  .laptop-info { flex: 1; min-width: 0; }
+  .laptop-info .name { font-size: 14px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .laptop-info .spec { font-size: 12px; color: var(--color-text-secondary); margin-bottom: 2px; display: flex; align-items: center; gap: 5px; }
+  .laptop-info .spec i { font-size: 13px; }
+  .price-badge { display: inline-block; background: #1565C0; color: #fff; font-size: 12px; font-weight: 500; padding: 3px 10px; border-radius: var(--border-radius-md); margin-top: 5px; }
+</style>
+
+<div id="screen-login" class="screen active">
+  <div class="login-wrap">
+    <div class="login-brand">
+      <div class="brand-icon"><i class="ti ti-device-laptop" aria-hidden="true"></i></div>
+      <h1>LaptopList</h1>
+      <p>Laptop Entry Level Terbaik</p>
+    </div>
+    <div class="login-card">
+      <div class="field">
+        <label for="inp-user">Username</label>
+        <input type="text" id="inp-user" placeholder="Masukkan username" autocomplete="off" />
+      </div>
+      <div class="field">
+        <label for="inp-pass">Password</label>
+        <input type="password" id="inp-pass" placeholder="Masukkan password" />
+      </div>
+      <div class="error-msg" id="err-msg"><i class="ti ti-alert-circle"></i> Username atau password salah.</div>
+      <button class="btn-login" id="btn-login">Masuk</button>
+    </div>
+    <p class="login-hint">Demo: username = <strong>admin</strong> &nbsp;|&nbsp; password = <strong>1234</strong></p>
+  </div>
+</div>
+
+<div id="screen-list" class="screen">
+  <div class="list-header">
+    <i class="ti ti-device-laptop" aria-hidden="true"></i>
+    <h2>Daftar Laptop Entry Level</h2>
+  </div>
+  <div class="list-body" id="list-body"></div>
+</div>
+
+<script>
+const laptops = [
+  { name: "Acer Aspire 3 A315", proc: "Intel Core i3-1215U", ram: "8 GB DDR4", price: "Rp 5.499.000", img: "https://www.acer.com/content/dam/acer/regional/apac/en/category/laptop/aspire/aspire-3/ksp-image/a315-58-ksp-04-2560x1440.jpg" },
+  { name: "ASUS VivoBook 14 A1404", proc: "Intel Core i3-1215U", ram: "8 GB DDR4", price: "Rp 5.999.000", img: "https://dlcdnwebimgs.asus.com/gain/7A6DE86E-1E27-40AE-8088-E5B0C2E0CB13/w800" },
+  { name: "Lenovo IdeaPad Slim 3", proc: "AMD Ryzen 5 7520U", ram: "8 GB LPDDR5", price: "Rp 6.299.000", img: "https://p3-ofp.static.pub/fes/cms/2022/09/22/0y5cxmhvjqzl3yxfk1ywl9e8n6mrw4169786.png" },
+  { name: "HP 14s-dq5120TU", proc: "Intel Core i3-1215U", ram: "8 GB DDR4", price: "Rp 5.799.000", img: "https://ssl-product-images.www8-hp.com/digmedialib/prodimg/knowledgebase/c08253865.png" },
+  { name: "ASUS VivoBook Go 14 E1404", proc: "AMD Ryzen 3 7320U", ram: "8 GB LPDDR5", price: "Rp 4.999.000", img: "https://dlcdnwebimgs.asus.com/gain/4B5C2AD6-F9E1-4329-8A94-1A5D8E1F2A3B/w800" },
+  { name: "Acer Aspire 5 A514", proc: "AMD Ryzen 5 5500U", ram: "8 GB DDR4", price: "Rp 6.799.000", img: "https://images.acer.com/is/image/acer/acer-aspire5-a514-55-laptop-pure-silver:KSP-with-Specs-XL" },
+  { name: "Lenovo IdeaPad 1 14ALC7", proc: "AMD Ryzen 5 5500U", ram: "8 GB DDR4", price: "Rp 5.499.000", img: "https://p3-ofp.static.pub/fes/cms/2022/09/09/rvwdjvhj8dpih5s1yj1mkxdovnfmz4761697.png" },
+  { name: "HP Pavilion 14-ec1xxx", proc: "AMD Ryzen 5 5625U", ram: "8 GB DDR4", price: "Rp 7.299.000", img: "https://ssl-product-images.www8-hp.com/digmedialib/prodimg/knowledgebase/c07905940.png" },
+  { name: "MSI Modern 14 C12M", proc: "Intel Core i5-1235U", ram: "8 GB DDR4", price: "Rp 7.499.000", img: "https://storage-asset.msi.com/global/picture/image/feature/nb/Modern-14-C12M/Modern-14-C12M-Hero-Banner.png" },
+  { name: "Axioo MyBook 14H", proc: "Intel Core i3-1115G4", ram: "8 GB DDR4", price: "Rp 4.299.000", img: "https://axiooworld.com/wp-content/uploads/2022/08/MyBook-14H-Silver.png" },
+];
+
+function renderList() {
+  const body = document.getElementById('list-body');
+  body.innerHTML = laptops.map(l => `
+    <div class="laptop-card">
+      <div class="laptop-img">
+        <img src="${l.img}" alt="${l.name}" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+        <i class="ti ti-device-laptop img-fallback" style="display:none" aria-hidden="true"></i>
+      </div>
+      <div class="laptop-info">
+        <div class="name">${l.name}</div>
+        <div class="spec"><i class="ti ti-cpu" aria-hidden="true"></i>${l.proc}</div>
+        <div class="spec"><i class="ti ti-database" aria-hidden="true"></i>RAM: ${l.ram}</div>
+        <span class="price-badge">${l.price}</span>
+      </div>
+    </div>
+  `).join('');
+}
+
+document.getElementById('btn-login').addEventListener('click', () => {
+  const u = document.getElementById('inp-user').value.trim();
+  const p = document.getElementById('inp-pass').value.trim();
+  const err = document.getElementById('err-msg');
+  if (u === 'admin' && p === '1234') {
+    renderList();
+    document.getElementById('screen-login').classList.remove('active');
+    document.getElementById('screen-list').classList.add('active');
+  } else {
+    err.style.display = 'block';
+  }
+});
+
+document.getElementById('inp-pass').addEventListener('keydown', e => {
+  if (e.key === 'Enter') document.getElementById('btn-login').click();
+});
+</script>
